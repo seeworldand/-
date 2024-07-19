@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tg.blog.dao.UserDao">
+
+	<resultMap id="User" type="com.tg.blog.model.User" >
+		<result column="user_id" property="userId"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+		<result column="email" property="email"/>
+		<result column="created" property="created"/>
+		<result column="last_modified" property="lastModified"/>
+	</resultMap>
+
+	<!-- 通用查询结果列-->
+	<sql id="Base_Column_List">
+		user_id,
+		username,
+		password,
+		email,
+		created,
+		last_modified
+	</sql>
+
+	<!-- 查询（根据主键ID查询） -->
+	<select id="selectByPrimaryKey" resultMap="User" parameterType="java.lang.Long">
+		 SELECT
+		 <include refid="Base_Column_List" />
+		 FROM user
+		 WHERE user_id = #{userId}
+	</select>
+
+	<!--删除：根据主键ID删除-->
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		 DELETE FROM user
+		 WHERE user_id = #{userId}
+	</delete>
+
+	<!-- 添加 -->
+	<insert id="insert" parameterType="com.tg.blog.model.User" >
+		 INSERT INTO user
+ 		(
+			 user_id,
+			 username,
+			 password,
+			 email,
+			 created,
+			 last_modified
+		) 
+		 VALUES 
+ 		(
+			 #{userId},
+			 #{username},
+			 #{password},
+			 #{email},
+			 #{created},
+			 #{lastModified}
+ 		) 
+		 <selectKey keyProperty="userId" resultType="Long" order="AFTER">
+			 select LAST_INSERT_ID()
+		 </selectKey>
+	</insert>
+
+	<!-- 修 改-->
+	<update id="updateByPrimaryKeySelective" parameterType="com.tg.blog.model.User" >
+		 UPDATE user
+ 		 <set> 
+			<if test="username != null and username != ''">
+				 username = #{username},
+			</if>
+			<if test="password != null and password != ''">
+				 password = #{password},
+			</if>
+			<if test="email != null and email != ''">
+				 email = #{email},
+			</if>
+			<if test="created != null">
+				 created = #{created},
+			</if>
+			<if test="lastModified != null">
+				 last_modified = #{lastModified},
+			</if>
+
+ 		 </set>
+		 WHERE user_id = #{userId}
+	</update>
+
+	<!-- list4Page 分页查询-->
+	<select id="list4Page" resultMap="User">
+		 SELECT 
+		 <include refid="Base_Column_List" />
+		 from user
+ 		 where 1=1  
+		<if test="record.userId != null">
+			 and user_id = #{record.userId} 
+		</if>
+		<if test="record.username != null and record.username != ''">
+			 and username = #{record.username} 
+		</if>
+		<if test="record.password != null and record.password != ''">
+			 and password = #{record.password} 
+		</if>
+		<if test="record.email != null and record.email != ''">
+			 and email = #{record.email} 
+		</if>
+		<if test="record.created != null">
+			 and created = #{record.created} 
+		</if>
+		<if test="record.lastModified != null">
+			 and last_modified = #{record.lastModified} 
+		</if>
+		<if test="commonQueryParam != null">
+			<if test="commonQueryParam.order != null ">
+				 order by #{commonQueryParam.order}			<if test="commonQueryParam.sort != null ">				 #{commonQueryParam.sort}			</if>
+			</if>
+			<if test="commonQueryParam.start != null  and commonQueryParam.pageSize != null">
+				 limit #{commonQueryParam.start}, #{commonQueryParam.pageSize}
+			</if>
+		</if>
+	</select>
+	<!-- count 总数-->
+	<select id="count" resultType="int">
+		 SELECT 
+		 count(1) 
+		 from user
+ 		 where 1=1  
+		<if test="userId != null">
+			 and user_id = #{userId} 
+		</if>
+		<if test="username != null and username != ''">
+			 and username = #{username} 
+		</if>
+		<if test="password != null and password != ''">
+			 and password = #{password} 
+		</if>
+		<if test="email != null and email != ''">
+			 and email = #{email} 
+		</if>
+		<if test="created != null">
+			 and created = #{created} 
+		</if>
+		<if test="lastModified != null">
+			 and last_modified = #{lastModified} 
+		</if>
+	</select>
+	<!-- list 查询-->
+	<select id="list" resultMap="User">
+		 SELECT 
+		 <include refid="Base_Column_List" />
+		 from user
+ 		 where 1=1  
+		<if test="userId != null">
+			 and user_id = #{userId} 
+		</if>
+		<if test="username != null and username != ''">
+			 and username = #{username} 
+		</if>
+		<if test="password != null and password != ''">
+			 and password = #{password} 
+		</if>
+		<if test="email != null and email != ''">
+			 and email = #{email} 
+		</if>
+		<if test="created != null">
+			 and created = #{created} 
+		</if>
+		<if test="lastModified != null">
+			 and last_modified = #{lastModified} 
+		</if>
+	</select>
+	<select id="selectByUsernameForUpdate" resultMap="User">
+		SELECT
+		<include refid="Base_Column_List"/>
+		from user
+		WHERE
+		username = #{username}  FOR UPDATE;
+	</select>
+</mapper>
